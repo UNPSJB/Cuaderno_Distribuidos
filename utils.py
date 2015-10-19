@@ -41,10 +41,14 @@ def lanzar_backgounrd(comando, a_menos_que=None, autokill=True):
 
 
 @contextmanager
-def lanzar_como_proceso(func, *args, **kwargs):
-    subproc = Process(target=func, args=args, kwargs=kwargs)
+def lanzar_como_proceso(func, args=None, kwargs=None, warm_up_time=0):
+    assert 0 <= warm_up_time <= 10, (
+        "El calentamiento es de 0 a 10 sgunods: %s" % warm_up_time
+    )
+    subproc = Process(target=func, args=args or (), kwargs=kwargs or {})
     subproc.start()
     print("Lanzando %s con el pid %d." % (func, subproc.pid or None))
+    sleep(warm_up_time)
     yield subproc
     if subproc.is_alive():
         subproc.terminate()
